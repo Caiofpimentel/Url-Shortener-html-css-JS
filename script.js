@@ -1,12 +1,11 @@
 document.getElementById('url-form').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    // Captura os valores do formulário
     const originalUrl = document.getElementById('original-url').value;
     const expiryDate = document.getElementById('expiry-date').value;
 
-    // Converte a data para timestamp em segundos
-    const expirationTime = Math.floor(Date.parse(expiryDate) / 1000);
+    // Converte a data para timestamp em milissegundos
+    const expirationTime = Date.parse(expiryDate);
 
     // Monta o corpo da requisição
     const requestData = {
@@ -19,32 +18,28 @@ document.getElementById('url-form').addEventListener('submit', async function (e
         const response = await fetch('https://wnuvaq8gjj.execute-api.sa-east-1.amazonaws.com/create', {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestData)
         });
 
-        // Verifica se a resposta foi bem-sucedida
+        // Logs para depuração
+        console.log('Status da resposta:', response.status);
+
         if (!response.ok) {
-            throw new Error('Erro ao encurtar o link. Tente novamente.');
+            const errorDetails = await response.text();
+            throw new Error(`Erro ao encurtar o link: ${errorDetails}`);
         }
 
-        try {
-            // Processa a resposta
-            const responseData = await response.json();
-            const code = responseData.code; // Extrai o valor do campo "code"
-            const shortenedUrl = `https://wnuvaq8gjj.execute-api.sa-east-1.amazonaws.com/${code}`;
-        
-            // Exibe o link encurtado
-            const linkElement = document.getElementById('shortened-url');
-            linkElement.textContent = shortenedUrl;
-            linkElement.href = shortenedUrl;
-        } catch (error) {
-            console.error('Erro:', error.message);
-            alert('Falha montando URL: ' + error.message);
-        }
+        // Processa a resposta
+        const responseData = await response.json();
+        const code = responseData.code; // Pega o código retornado pela API
+        const shortenedUrl = `https://wnuvaq8gjj.execute-api.sa-east-1.amazonaws.com/${code}`;
 
-
+        // Exibe o link encurtado
+        const linkElement = document.getElementById('shortened-url');
+        linkElement.textContent = shortenedUrl;
+        linkElement.href = shortenedUrl;
     } catch (error) {
         console.error('Erro:', error.message);
         alert('Falha na requisição: ' + error.message);
