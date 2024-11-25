@@ -5,7 +5,7 @@ document.getElementById('url-form').addEventListener('submit', async function (e
     const expiryDate = document.getElementById('expiry-date').value;
 
     // Converte a data para timestamp em milissegundos
-    const expirationTime = Date.parse(expiryDate);
+    const expirationTime = Date.parse(expiryDate)/1000;
 
     // Monta o corpo da requisição
     const requestData = {
